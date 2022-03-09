@@ -1,10 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteTodo, updateTodo } from '../../actions';
 
 const TodoItem = ({ task }) => {
   const [isUpdate, setIsUpdate] = useState(false);
   const dispatch = useDispatch();
+  const userLogin = useSelector((state) => state.auth);
+  console.log(userLogin.isSignedIn);
   const textRef = useRef(null);
   function editItemToState(e) {
     e.preventDefault();
@@ -26,7 +28,13 @@ const TodoItem = ({ task }) => {
       <>
         {task.task}
         <button onClick={() => setIsUpdate(true)}>Edit</button>
-        <button onClick={() => dispatch(deleteTodo(task.id))}>Delete</button>
+        <button
+          onClick={() =>
+            userLogin.isSignedIn ? dispatch(deleteTodo(task.id)) : null
+          }
+        >
+          Delete
+        </button>
       </>
     );
   };
@@ -34,7 +42,9 @@ const TodoItem = ({ task }) => {
   return (
     <>
       <p></p>
-      <div>{isUpdate ? renderForm() : renderItem()}</div>
+      <div>
+        {isUpdate && userLogin.isSignedIn ? renderForm() : renderItem()}
+      </div>
     </>
   );
 };
